@@ -19,12 +19,12 @@ test.describe('Consulta de Pedidos', () => {
       color: 'Glacier Blue',
       interiorColor: 'cream',
       wheelType: 'aero Wheels',
-      status: 'APROVADO'
+      status: 'APROVADO' as const
     }
-   //actions
+    //actions
     const orderLockupPage = new OrderLockupPage(page)
     await orderLockupPage.fillOrderNumber(order.number)
-   //assertions
+    //assertions
     await expect(page.getByTestId('order-result-VLO-ZIOQEP')).toMatchAriaSnapshot(`
         - img
         - paragraph: Pedido
@@ -54,12 +54,8 @@ test.describe('Consulta de Pedidos', () => {
         - paragraph: À Vista
         - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
         `);
-//
-    const cssValidation = page.getByRole('status').filter({ hasText: order.status })
-    await expect(cssValidation).toHaveClass(/bg-green-100 text-green-700/)
-    await expect(cssValidation).toHaveClass(/text-green-700/)
-    const cssIcon = cssValidation.locator('svg')
-    await expect(cssIcon).toHaveClass(/lucide lucide-circle-check-big/)
+    //
+    await orderLockupPage.validateStatusBadge(order.status)
 
   });
   test('Deve realizar a consulta de pedido REPROVADO', async ({ page }) => {
@@ -67,13 +63,13 @@ test.describe('Consulta de Pedidos', () => {
     const order = {
       number: 'VLO-RO66A4',
       color: 'Midnight Black',
-      status: 'REPROVADO'
+      status: 'REPROVADO' as const
     }
 
-  //actions
-  const orderLockupPage = new OrderLockupPage(page)
-  await orderLockupPage.fillOrderNumber(order.number)
-//assertions
+    //actions
+    const orderLockupPage = new OrderLockupPage(page)
+    await orderLockupPage.fillOrderNumber(order.number)
+    //assertions
     const textPedido = page.getByRole('paragraph')
       .filter({ hasText: /^Pedido$/ })
       .locator('..')
@@ -107,13 +103,9 @@ test.describe('Consulta de Pedidos', () => {
         - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
         `);
     await expect(textPedido).toContainText(order.number, { timeout: 10_000 })
-//assertions
-    await expect(page.getByText(order.status)).toBeVisible()
-    await expect(page.getByText(order.status)).toContainText(order.status)
-    const cssValidation = page.getByRole('status').filter({ hasText: order.status })
-    await expect(cssValidation).toHaveClass(/bg-red-100 text-red-700/)
-    const cssIcon = cssValidation.locator('svg')
-    await expect(cssIcon).toHaveClass(/lucide-circle-x/)
+    //assertions
+    await orderLockupPage.validateStatusBadge(order.status)
+
 
   });
   test('Deve realizar a consulta de pedido EM ANALISE', async ({ page }) => {
@@ -121,13 +113,13 @@ test.describe('Consulta de Pedidos', () => {
     const order = {
       number: 'VLO-CYUGFZ',
       color: 'Midnight Black',
-      status: 'EM_ANALISE'
+      status: 'EM_ANALISE' as const
     }
 
-//actions
+    //actions
     const orderLockupPage = new OrderLockupPage(page)
     await orderLockupPage.fillOrderNumber(order.number)
-//assertions
+    //assertions
     const textPedido = page.getByRole('paragraph')
       .filter({ hasText: /^Pedido$/ })
       .locator('..')
@@ -161,22 +153,19 @@ test.describe('Consulta de Pedidos', () => {
         - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
         `);
     await expect(textPedido).toContainText(order.number, { timeout: 10_000 })
-//assertions
+    //assertions
     await expect(page.getByText(order.status)).toBeVisible()
     await expect(page.getByText(order.status)).toContainText(order.status)
-    const cssValidation = page.getByRole('status').filter({ hasText: order.status })
-    await expect(cssValidation).toHaveClass(/bg-amber-100/)
-    await expect(cssValidation).toHaveClass(/text-amber-700/)
-    const cssIcon = cssValidation.locator('svg')
-    await expect(cssIcon).toHaveClass(/lucide-clock/)
+
+    await orderLockupPage.validateStatusBadge(order.status)
 
   });
   test('Deve exibir alerta de pedido não encontrado', async ({ page }) => {
     const order = generateOrderCode()
-//actions
+    //actions
     const orderLockupPage = new OrderLockupPage(page)
     await orderLockupPage.fillOrderNumber(order)
-//assertions  
+    //assertions  
     await expect(page.locator('#root')).toMatchAriaSnapshot(`
     - img
     - heading "Pedido não encontrado" [level=3]
