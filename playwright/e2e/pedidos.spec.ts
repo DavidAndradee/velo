@@ -1,176 +1,93 @@
-import { test, expect } from '@playwright/test';
+import { OrderDetails } from '../support/actions/orderLookupActions';
+import { test, expect } from '../support/fixtures';
 import { generateOrderCode } from '../support/helpers';
-import { OrderLockupPage } from '../support/pages/OrderLockupPage';
 
 test.describe('Consulta de Pedidos', () => {
 
-  test.beforeEach(async ({ page }) => {
-
-    await page.goto('http://localhost:5173', { timeout: 50_000 });
-    await expect(page.getByTestId('hero-section').getByRole('heading', { name: 'Velô Sprint' })).toBeVisible();
-    await page.getByRole('link', { name: 'Consultar Pedido' }).click()
-
+  test.beforeEach(async ({ app }) => {
+    await app.orderLookup.open()
   })
 
-  test('Deve realizar a consulta de pedido APROVADO', async ({ page }) => {
+  test('Deve realizar a consulta de pedido APROVADO', async ({ app }) => {
 
-    const order = {
+    const order: OrderDetails = {
       number: 'VLO-ZIOQEP',
+      status: 'APROVADO',
       color: 'Glacier Blue',
       interiorColor: 'cream',
-      wheelType: 'aero Wheels',
-      status: 'APROVADO' as const
+      wheels: 'aero Wheels',
+      customer: {
+        name: 'test A Araujo',
+        email: 'bob@marley.com'
+      },
+      payment: 'À Vista'
     }
-    //actions
-    const orderLockupPage = new OrderLockupPage(page)
-    await orderLockupPage.fillOrderNumber(order.number)
-    //assertions
-    await expect(page.getByTestId('order-result-VLO-ZIOQEP')).toMatchAriaSnapshot(`
-        - img
-        - paragraph: Pedido
-        - paragraph: ${order.number}
-        - status:
-          - img
-          - text: ${order.status}
-        - img "Velô Sprint"
-        - paragraph: Modelo
-        - paragraph: Velô Sprint
-        - paragraph: Cor
-        - paragraph: ${order.color}
-        - paragraph: Interior
-        - paragraph: ${order.interiorColor}
-        - paragraph: Rodas
-        - paragraph: ${order.wheelType}
-        - heading "Dados do Cliente" [level=4]
-        - paragraph: Nome
-        - paragraph: test A Araujo
-        - paragraph: Email
-        - paragraph: bob@marley.com
-        - paragraph: Loja de Retirada
-        - paragraph
-        - paragraph: Data do Pedido
-        - paragraph: /\\d+\\/\\d+\\/\\d+/
-        - heading "Pagamento" [level=4]
-        - paragraph: À Vista
-        - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
-        `);
-    //
-    await orderLockupPage.validateStatusBadge(order.status)
+
+    await app.orderLookup.searchOrder(order.number)
+    await app.orderLookup.validateOrderDetails(order)
+    await app.orderLookup.validateStatusBadge(order.status)
 
   });
-  test('Deve realizar a consulta de pedido REPROVADO', async ({ page }) => {
+  test('Deve realizar a consulta de pedido REPROVADO', async ({ app }) => {
 
-    const order = {
+    const order: OrderDetails = {
       number: 'VLO-RO66A4',
+      status: 'REPROVADO',
       color: 'Midnight Black',
-      status: 'REPROVADO' as const
+      interiorColor: 'cream',
+      wheels: 'sport Wheels',
+      customer: {
+        name: 'Andra o cara',
+        email: 'test@gmail.com'
+      },
+      payment: 'À Vista'
     }
 
-    //actions
-    const orderLockupPage = new OrderLockupPage(page)
-    await orderLockupPage.fillOrderNumber(order.number)
-    //assertions
-    const textPedido = page.getByRole('paragraph')
-      .filter({ hasText: /^Pedido$/ })
-      .locator('..')
-    await expect(page.getByTestId('order-result-VLO-RO66A4')).toMatchAriaSnapshot(`
-        - img
-        - paragraph: Pedido
-        - paragraph: ${order.number}
-        - status:
-          - img
-          - text: REPROVADO
-        - img "Velô Sprint"
-        - paragraph: Modelo
-        - paragraph: Velô Sprint
-        - paragraph: Cor
-        - paragraph: ${order.color}
-        - paragraph: Interior
-        - paragraph: cream
-        - paragraph: Rodas
-        - paragraph: sport Wheels
-        - heading "Dados do Cliente" [level=4]
-        - paragraph: Nome
-        - paragraph: Andra o cara
-        - paragraph: Email
-        - paragraph: test@gmail.com
-        - paragraph: Loja de Retirada
-        - paragraph
-        - paragraph: Data do Pedido
-        - paragraph: /\\d+\\/\\d+\\/\\d+/
-        - heading "Pagamento" [level=4]
-        - paragraph: À Vista
-        - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
-        `);
-    await expect(textPedido).toContainText(order.number, { timeout: 10_000 })
-    //assertions
-    await orderLockupPage.validateStatusBadge(order.status)
+    await app.orderLookup.searchOrder(order.number)
+    await app.orderLookup.validateOrderDetails(order)
+    await app.orderLookup.validateStatusBadge(order.status)
 
 
   });
-  test('Deve realizar a consulta de pedido EM ANALISE', async ({ page }) => {
+  test('Deve realizar a consulta de pedido EM ANALISE', async ({ app }) => {
 
-    const order = {
+    const order: OrderDetails = {
       number: 'VLO-CYUGFZ',
+      status: 'EM_ANALISE',
       color: 'Midnight Black',
-      status: 'EM_ANALISE' as const
+      interiorColor: 'cream',
+      wheels: 'sport Wheels',
+      customer: {
+        name: 'andra de araujo',
+        email: 'testando@gmail.com'
+      },
+      payment: 'À Vista'
     }
 
-    //actions
-    const orderLockupPage = new OrderLockupPage(page)
-    await orderLockupPage.fillOrderNumber(order.number)
-    //assertions
-    const textPedido = page.getByRole('paragraph')
-      .filter({ hasText: /^Pedido$/ })
-      .locator('..')
-    await expect(page.getByTestId('order-result-VLO-CYUGFZ')).toMatchAriaSnapshot(`
-        - img
-        - paragraph: Pedido
-        - paragraph: ${order.number}
-        - status:
-          - img
-          - text: ${order.status}
-        - img "Velô Sprint"
-        - paragraph: Modelo
-        - paragraph: Velô Sprint
-        - paragraph: Cor
-        - paragraph: ${order.color}
-        - paragraph: Interior
-        - paragraph: cream
-        - paragraph: Rodas
-        - paragraph: sport Wheels
-        - heading "Dados do Cliente" [level=4]
-        - paragraph: Nome
-        - paragraph: andra de araujo
-        - paragraph: Email
-        - paragraph: testando@gmail.com
-        - paragraph: Loja de Retirada
-        - paragraph
-        - paragraph: Data do Pedido
-        - paragraph: /\\d+\\/\\d+\\/\\d+/
-        - heading "Pagamento" [level=4]
-        - paragraph: À Vista
-        - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
-        `);
-    await expect(textPedido).toContainText(order.number, { timeout: 10_000 })
-    //assertions
-    await expect(page.getByText(order.status)).toBeVisible()
-    await expect(page.getByText(order.status)).toContainText(order.status)
-
-    await orderLockupPage.validateStatusBadge(order.status)
+    await app.orderLookup.searchOrder(order.number)
+    await app.orderLookup.validateOrderDetails(order)
+    await app.orderLookup.validateStatusBadge(order.status)
 
   });
-  test('Deve exibir alerta de pedido não encontrado', async ({ page }) => {
+  test('Deve exibir alerta de pedido não encontrado', async ({ app }) => {
     const order = generateOrderCode()
-    //actions
-    const orderLockupPage = new OrderLockupPage(page)
-    await orderLockupPage.fillOrderNumber(order)
-    //assertions  
-    await expect(page.locator('#root')).toMatchAriaSnapshot(`
-    - img
-    - heading "Pedido não encontrado" [level=3]
-    - paragraph: Verifique o número do pedido e tente novamente
-    `);
+
+    await app.orderLookup.searchOrder(order)
+    await app.orderLookup.validateOrderNotFound()
+
+  })
+  test('Deve exibir mensagem de quando a entrada é de qualquer formato', async ({ app }) => {
+    const orderCode = 'XYZ-999-INVALID'
+
+    await app.orderLookup.searchOrder(orderCode)
+    await app.orderLookup.validateOrderNotFound()
+
+  })
+  test('Deve manter o botao de buscar pedido desabilitado quando o campo estiver vazio', async ({ app, page }) => {
+    const button = app.orderLookup.elements.searchButton
+    await expect(button).toBeDisabled()
+    await app.orderLookup.elements.orderInput.fill('      ')
+    await expect(button).toBeDisabled()
 
   })
 
