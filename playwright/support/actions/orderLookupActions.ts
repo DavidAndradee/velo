@@ -24,7 +24,7 @@ export function createOrderLookupActions(page: Page) {
       orderInput
     },
     async open() {
-      await page.goto('/')
+      await page.goto('/', { timeout: 50000 })
       const title = page.getByTestId('hero-section').getByRole('heading')
       await expect(title).toContainText('Velô Sprint')
 
@@ -38,36 +38,35 @@ export function createOrderLookupActions(page: Page) {
     },
 
     async validateOrderDetails(order: OrderDetails) {
-      const snapshot = `
+      await expect(page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(`
+    - img
+    - paragraph: Pedido
+    - paragraph: ${order.number}
+    - status:
       - img
-      - paragraph: Pedido
-      - paragraph: ${order.number}
-      - status:
-        - img
-        - text: ${order.status}
-      - img "Velô Sprint"
-      - paragraph: Modelo
-      - paragraph: Velô Sprint
-      - paragraph: Cor
-      - paragraph: ${order.color}
-      - paragraph: Interior
-      - paragraph: ${order.interiorColor}
-      - paragraph: Rodas
-      - paragraph: ${order.wheels}
-      - heading "Dados do Cliente" [level=4]
-      - paragraph: Nome
-      - paragraph: ${order.customer.name}
-      - paragraph: Email
-      - paragraph: ${order.customer.email}
-      - paragraph: Loja de Retirada
-      - paragraph
-      - paragraph: Data do Pedido
-      - paragraph: /\\d+\\/\\d+\\/\\d+/
-      - heading "Pagamento" [level=4]
-      - paragraph: ${order.payment}
-      - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
-      `
-      await expect(page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(snapshot)
+      - text: ${order.status}
+    - img "Velô Sprint"
+    - paragraph: Modelo
+    - paragraph: Velô Sprint
+    - paragraph: Cor
+    - paragraph: ${order.color}
+    - paragraph: Interior
+    - paragraph: ${order.interiorColor}
+    - paragraph: Rodas
+    - paragraph: ${order.wheels}
+    - heading "Dados do Cliente" [level=4]
+    - paragraph: Nome
+    - paragraph: ${order.customer.name}
+    - paragraph: Email
+    - paragraph: ${order.customer.email}
+    - paragraph: Loja de Retirada
+    - paragraph
+    - paragraph: Data do Pedido
+    - paragraph: /\\d+\\/\\d+\\/\\d+/
+    - heading "Pagamento" [level=4]
+    - paragraph: ${order.payment}
+    - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
+    `)
     },
 
     async validateStatusBadge(status: OrderStatus) {

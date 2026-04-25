@@ -18,3 +18,4 @@ export function generateOrderCode() {
     await page.getByRole('textbox', { name: 'Número do Pedido' }).fill(orderNumber)
     await page.getByRole('button', { name: 'Buscar Pedido' }).click()
   }
+  
