@@ -11,14 +11,14 @@ test.describe('Consulta de Pedidos', () => {
   test('Deve realizar a consulta de pedido APROVADO', async ({ app }) => {
 
     const order: OrderDetails = {
-      number: 'VLO-ZIOQEP',
+      number: 'VLO-HRQJWK',
       status: 'APROVADO',
       color: 'Glacier Blue',
       interiorColor: 'cream',
       wheels: 'aero Wheels',
       customer: {
-        name: 'test A Araujo',
-        email: 'bob@marley.com'
+        name: 'andra araujo',
+        email: 'andra@test.com'
       },
       payment: 'À Vista'
     }
@@ -31,13 +31,13 @@ test.describe('Consulta de Pedidos', () => {
   test('Deve realizar a consulta de pedido REPROVADO', async ({ app }) => {
 
     const order: OrderDetails = {
-      number: 'VLO-RO66A4',
+      number: 'VLO-JJQMPV',
       status: 'REPROVADO',
       color: 'Midnight Black',
       interiorColor: 'cream',
       wheels: 'sport Wheels',
       customer: {
-        name: 'Andra o cara',
+        name: 'araujo david',
         email: 'test@gmail.com'
       },
       payment: 'À Vista'
@@ -52,7 +52,7 @@ test.describe('Consulta de Pedidos', () => {
   test('Deve realizar a consulta de pedido EM ANALISE', async ({ app }) => {
 
     const order: OrderDetails = {
-      number: 'VLO-CYUGFZ',
+      number: 'VLO-RJ4G4Q',
       status: 'EM_ANALISE',
       color: 'Midnight Black',
       interiorColor: 'cream',

@@ -1,11 +1,14 @@
 import { test as base } from '@playwright/test'
-
 import { createConfiguratorActions } from './actions/configuratorActions'
 import { createOrderLookupActions } from './actions/orderLookupActions'
+import { createCheckoutActions } from './actions/checkoutActions'
+// import { createHeroActions } from './actions/heroActions'
 
 type App = {
   orderLookup: ReturnType<typeof createOrderLookupActions>
   configurator: ReturnType<typeof createConfiguratorActions>
+  checkout: ReturnType<typeof createCheckoutActions>
+  // hero: ReturnType<typeof createHeroActions>
 }
 
 export const test = base.extend<{ app: App }>({
@@ -13,6 +16,8 @@ export const test = base.extend<{ app: App }>({
     const app: App = {
       orderLookup: createOrderLookupActions(page),
       configurator: createConfiguratorActions(page),
+      checkout: createCheckoutActions(page),
+      // hero: createHeroActions(page),
     }
     await use(app)
   },

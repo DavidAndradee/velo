@@ -73,7 +73,8 @@ Garantir que o botão **Monte o Seu** encaminha o cliente para o fluxo de pedido
 | Id | Ação | Resultado Esperado |
 |----|------|--------------------|
 | 1  | Conferir o **Preço de Venda** exibido no configurador. | Valor coerente com as escolhas atuais. |
-| 2  | Clicar em **Monte o Seu**. | A aplicação navega para a rota de checkout (`/order`). |
+| 2  | Marcar o opcional **Precision Park** (+ R$ 5.500,00). | Checkbox marcado; descrição do opcional visível; preço sobe para **R$ 45.500,00**. |
+| 3  | Clicar em **Monte o Seu**. | A aplicação navega para a rota de checkout (`/order`). |
 
 #### Resultados Esperados
 - Transição do configurador para o módulo de pedido sem erro; a jornada continua na etapa de dados e pagamento.
