@@ -21,6 +21,10 @@ export function createCheckoutActions(page: Page) {
       terms,
       alerts
     },
+    async gotoConfigOrder() {
+      await page.goto('/')
+      await page.getByRole('link', { name: /Configure Agora/i }).click()
+    },
 
     async expectLoaded() {
       await expect(page.getByRole('heading', { name: 'Finalizar Pedido' })).toBeVisible()
