@@ -120,6 +120,10 @@ test.describe('Checkout', () => {
 
   test.describe('Pagamento e Confirmação', () => {
 
+    test.beforeEach(async ({ app }) => {
+      await app.hero.open()
+    })
+
     test('deve criar um pedido com sucesso para pagamento à vista', async ({ page, app }) => {
 
       const customer = {
@@ -136,8 +140,6 @@ test.describe('Checkout', () => {
       await deleteOrderByEmail(customer.email)
 
       // Arrange
-      await app.checkout.gotoConfigOrder()
-
       await app.configurator.expectPrice(customer.totalPrice)
       await app.configurator.finishConfigurator()
       await app.checkout.expectLoaded()
@@ -155,7 +157,7 @@ test.describe('Checkout', () => {
       await app.checkout.expectResult('Pedido Aprovado!')
     })
 
-    test('deve aprovar automaticamente o crédito quando o score do CPF for maior que 700 no financiamento', async ({ page, app }) => {
+    test('deve aprovar automaticamente o crédito quando o score do CPF for maior que 700 no financiamento', async ({ app }) => {
 
       const customer = {
         name: 'Steve',
@@ -170,16 +172,10 @@ test.describe('Checkout', () => {
 
       await deleteOrderByEmail(customer.email)
 
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 800 }),
-        })
-      })
+      await app.mock.creditAnalysis(800)
 
       // Arrange
-      await app.checkout.gotoConfigOrder()
+      await app.hero.open()
 
       await app.configurator.expectPrice(customer.totalPrice)
       await app.configurator.finishConfigurator()
@@ -198,7 +194,7 @@ test.describe('Checkout', () => {
       await app.checkout.expectResult('Pedido Aprovado!')
     })
 
-    test('deve encaminhar para análise de crédito quando o score do CPF for entre 501 e 700 no financiamento', async ({ page, app }) => {
+    test('deve encaminhar para análise de crédito quando o score do CPF for entre 501 e 700 no financiamento', async ({ app }) => {
 
       const customer = {
         name: 'andra',
@@ -213,17 +209,7 @@ test.describe('Checkout', () => {
 
       await deleteOrderByEmail(customer.email)
 
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 550 }),
-        })
-      })
-
-      // Arrange
-      await app.checkout.gotoConfigOrder()
-
+      await app.mock.creditAnalysis(550)
 
       // Arrange
       await app.configurator.expectPrice(customer.totalPrice)
@@ -242,7 +228,7 @@ test.describe('Checkout', () => {
       await app.checkout.expectResult('Pedido em Análise!')
     })
 
-    test('deve reprovar o crédito quando o score do CPF for menor ou igual a 500 no financiamento sem entrada', async ({ page, app }) => {
+    test('deve reprovar o crédito quando o score do CPF for menor ou igual a 500 no financiamento sem entrada', async ({ app }) => {
 
       const customer = {
         name: 'Clark',
@@ -257,16 +243,9 @@ test.describe('Checkout', () => {
 
       await deleteOrderByEmail(customer.email)
 
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 400 }),
-        })
-      })
+      await app.mock.creditAnalysis(400)
 
       // Arrange
-      await app.checkout.gotoConfigOrder()
 
 
       await app.configurator.expectPrice(customer.totalPrice)
@@ -285,7 +264,7 @@ test.describe('Checkout', () => {
       await app.checkout.expectResult('Pedido Reprovado!')
     })
 
-    test('deve reprovar o crédito quando o score do CPF for menor ou igual a 500 no financiamento com entrada menor que 50%', async ({ page, app }) => {
+    test('deve reprovar o crédito quando o score do CPF for menor ou igual a 500 no financiamento com entrada menor que 50%', async ({ app }) => {
 
       const customer = {
         name: 'Diana',
@@ -302,16 +281,9 @@ test.describe('Checkout', () => {
       await deleteOrderByEmail(customer.email)
 
 
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 500 }),
-        })
-      })
+      await app.mock.creditAnalysis(500)
 
       // Arrange
-      await app.checkout.gotoConfigOrder()
 
       await app.configurator.expectPrice(customer.totalPrice)
       await app.configurator.finishConfigurator()
@@ -330,7 +302,7 @@ test.describe('Checkout', () => {
       await app.checkout.expectResult('Pedido Reprovado!')
     })
 
-    test('deve reprovar o crédito quando o score do CPF for menor ou igual a 500 no financiamento com entrada igual a 50%', async ({ page, app }) => {
+    test('deve reprovar o crédito quando o score do CPF for menor ou igual a 500 no financiamento com entrada igual a 50%', async ({ app }) => {
 
       const customer = {
         name: 'evas',
@@ -346,17 +318,10 @@ test.describe('Checkout', () => {
 
       await deleteOrderByEmail(customer.email)
 
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 450 }),
-        })
-      })
+      await app.mock.creditAnalysis(450)
 
 
       // Arrange
-      await app.checkout.gotoConfigOrder()
 
       await app.configurator.expectPrice(customer.totalPrice)
       await app.configurator.finishConfigurator()
@@ -375,7 +340,7 @@ test.describe('Checkout', () => {
       await app.checkout.expectResult('Pedido Aprovado!')
     })
 
-    test('deve aprovar o crédito quando o score do CPF for menor ou igual a 500 no financiamento com entrada maior que 50%', async ({ page, app }) => {
+    test('deve aprovar o crédito quando o score do CPF for menor ou igual a 500 no financiamento com entrada maior que 50%', async ({ app }) => {
 
       const customer = {
         name: 'baby',
@@ -391,17 +356,10 @@ test.describe('Checkout', () => {
 
       await deleteOrderByEmail(customer.email)
 
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 300 }),
-        })
-      })
+      await app.mock.creditAnalysis(300)
 
 
       // Arrange
-      await app.checkout.gotoConfigOrder()
 
       await app.configurator.expectPrice(customer.totalPrice)
       await app.configurator.finishConfigurator()
