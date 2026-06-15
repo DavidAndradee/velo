@@ -5,11 +5,11 @@ export type OrderStatus = 'APROVADO' | 'REPROVADO' | 'EM_ANALISE'
 export type OrderDetails = {
   number: string
   status: OrderStatus
-  color: string,
-  interiorColor: string,
+  color: string
   wheels: string
-  customer: { name: string; email: string }
+  customer: { name: string; email: string; document: string; phone: string }
   payment: string
+  total_price: string
 }
 
 export function createOrderLookupActions(page: Page) {
@@ -51,7 +51,6 @@ export function createOrderLookupActions(page: Page) {
     - paragraph: Cor
     - paragraph: ${order.color}
     - paragraph: Interior
-    - paragraph: ${order.interiorColor}
     - paragraph: Rodas
     - paragraph: ${order.wheels}
     - heading "Dados do Cliente" [level=4]
